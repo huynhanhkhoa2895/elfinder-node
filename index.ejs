@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>File Manager</title>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=2"
+    />
+
+    <!-- Section CSS -->
+    <!-- jQuery UI (REQUIRED) -->
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- elFinder CSS (REQUIRED) -->
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/css/elfinder.min.css"
+    />
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/css/theme.css"
+    />
+
+    <!-- elFinder JS (REQUIRED) -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/js/elfinder.min.js"></script>
+
+    <!-- elFinder initialization (REQUIRED) -->
+    <script type="text/javascript" charset="utf-8">
+        const APP_URL = '<%= API_URL %>';
+        const query_param = Object.fromEntries(new URLSearchParams(location.search));
+        const id = query_param.id;
+        // Documentation for client options:
+        // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+        $(document).ready(function () {
+            const elfinder = $('#elfinder').elfinder(
+                // 1st Arg - options
+                {
+                    height: '100%',
+                    resizable: false,
+                    cssAutoLoad: false, // Disable CSS auto loading
+                    url: '/connector', // connector URL (REQUIRED),
+                    path: '../media/uploads/', // initial directory path (OPTIONAL)
+                    getFileCallback: (file, fm) => {
+                        let path = file.hash.substring(3, file.hash.length);
+                        path = atob(path).replace(/\\/g, '/');
+                        const param = {
+                            path: path,
+                            name: file.name,
+                            mime: file.mime,
+                            size: file.size
+                        }
+                        window.opener.postMessage({ type: 'file_'+id, param }, '*');
+                        window.close();
+                    },
+                    handlers : {
+                        upload : function(event, elfinder) {
+                            try {
+                                let data = event.data.added[0];
+                                let path = data.hash.substring(3, data.hash.length);
+                                path = atob(path).replace(/\\/g, '/');
+                                const param = {
+                                    path: path,
+                                    name: data.name,
+                                    mime: data.mime,
+                                    size: data.size
+                                }
+                                window.opener.postMessage({ type: 'upload_'+id, param}, '*');
+                            } catch (e) {
+                                console.log('error', e);
+                            }
+
+                        },
+                        rename: function(event, elfinder) {
+                            let oldData = event.data.removed[0];
+                            oldData = oldData.substring(3, oldData.length);
+                            oldData = atob(oldData).replace(/\\/g, '/');
+                            console.log('oldData',oldData)
+                            console.log('rename', event);
+                            console.log('rename 2', elfinder);
+                        },
+                        remove: function(event, elfinder) {
+                            try {
+                                let data = event.data.removed[0];
+                                let path = data.substring(3, data.length);
+                                path = atob(path).replace(/\\/g, '/');
+                                const param = {
+                                    path: path,
+                                }
+                                console.log('remove', param);
+                                window.opener.postMessage({ type: 'remove_'+id, param}, '*');
+                            } catch (e) {
+                                console.log('error', e);
+                            }
+                        },
+                    }
+                }
+            );
+
+
+        });
+    </script>
+</head>
+
+<body>
+<!-- Element where elFinder will be created (REQUIRED) -->
+<div id="elfinder"></div>
+</body>
+</html>

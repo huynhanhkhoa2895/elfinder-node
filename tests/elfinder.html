@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>File Manager</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=2"
+    />
+
+    <!-- Section CSS -->
+    <!-- jQuery UI (REQUIRED) -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- elFinder CSS (REQUIRED) -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/css/elfinder.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/css/theme.css"
+    />
+
+    <!-- elFinder JS (REQUIRED) -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28/js/elfinder.min.js"></script>
+
+    <!-- elFinder initialization (REQUIRED) -->
+    <script type="text/javascript" charset="utf-8">
+      // Documentation for client options:
+      // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+      $(document).ready(function () {
+        const elfinder = $('#elfinder').elfinder(
+          // 1st Arg - options
+          {
+            height: '100%',
+            resizable: false,
+            cssAutoLoad: false, // Disable CSS auto loading
+            url: '/connector', // connector URL (REQUIRED),
+            getFileCallback: (file, fm) => {
+              let fileURL = file.url;
+              console.log('file',fileURL);
+              // $('#elfinder').remove();
+            },
+            closeOnEditorCallback : true,
+            handlers : {
+              upload : function(event, elfinder) {
+                console.log('upload', event);
+                console.log('upload 2', elfinder);
+              }
+            }
+          },
+          function (fm, extraObj) {
+            fm.bind('upload', function (file) {
+              console.log('upload success', file);
+            });
+          }
+        );
+
+      });
+    </script>
+  </head>
+
+  <body>
+    <!-- Element where elFinder will be created (REQUIRED) -->
+    <div id="elfinder"></div>
+  </body>
+</html>
