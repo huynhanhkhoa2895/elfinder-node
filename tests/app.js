@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const elFinder = require('../');
 const ejs = require('ejs');
+const cors = require('cors');
 require('dotenv').config()
 const uploadsDir = resolve(__dirname, process.env.PUBLIC_PATH);
 const roots = [
@@ -14,6 +15,7 @@ const roots = [
     permissions: { read: 1, write: 1, lock: 0 },
   },
 ];
+app.use(cors());
 app.set('view engine', 'ejs');
 app.use('/uploads', express.static(uploadsDir));
 

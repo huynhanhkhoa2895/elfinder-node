@@ -39,10 +39,9 @@
         const APP_URL = '<%= API_URL %>';
         const query_param = Object.fromEntries(new URLSearchParams(location.search));
         const id = query_param.id;
-        // Documentation for client options:
-        // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+        const isFromIFrame = query_param.isFromIframe ;
         $(document).ready(function () {
-            const elfinder = $('#elfinder').elfinder(
+            $('#elfinder').elfinder(
                 // 1st Arg - options
                 {
                     height: '100%',
@@ -59,7 +58,11 @@
                             mime: file.mime,
                             size: file.size
                         }
-                        window.opener.postMessage({ type: 'file_'+id, param }, '*');
+                        if (isFromIFrame) {
+                            window.parent.postMessage({ type: 'file_'+id, param }, '*');
+                        } else {
+                            window.opener.postMessage({ type: 'file_'+id, param }, '*');
+                        }
                         window.close();
                     },
                     handlers : {
