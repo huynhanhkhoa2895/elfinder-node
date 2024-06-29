@@ -48,20 +48,23 @@
                     resizable: false,
                     cssAutoLoad: false, // Disable CSS auto loading
                     url: '/connector', // connector URL (REQUIRED),
-                    path: '../media/uploads/', // initial directory path (OPTIONAL)
-                    getFileCallback: (file, fm) => {
-                        let path = file.hash.substring(3, file.hash.length);
-                        path = atob(path).replace(/\\/g, '/');
-                        const param = {
-                            path: path,
-                            name: file.name,
-                            mime: file.mime,
-                            size: file.size
-                        }
-                        if (isFromIFrame) {
-                            window.parent.postMessage({ type: 'file_'+id, param }, '*');
-                        } else {
-                            window.opener.postMessage({ type: 'file_'+id, param }, '*');
+                    path: '../media/uploads/', // initial directory path (OPTIONAL),
+                    getFileCallback: (_, fm) => {
+                        for (const file of fm.selectedFiles())
+                        {
+                            let path = file.hash.substring(3, file.hash.length);
+                            path = atob(path).replace(/\\/g, '/');
+                            const param = {
+                                path: path,
+                                name: file.name,
+                                mime: file.mime,
+                                size: file.size
+                            }
+                            if (isFromIFrame) {
+                                window.parent.postMessage({type: 'file_' + id, param}, '*');
+                            } else {
+                                window.opener.postMessage({type: 'file_' + id, param}, '*');
+                            }
                         }
                         window.close();
                     },
