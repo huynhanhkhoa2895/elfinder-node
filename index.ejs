@@ -49,6 +49,7 @@
                     url: '/connector', // connector URL (REQUIRED),
                     path: '../media/uploads/', // initial directory path (OPTIONAL),
                     getFileCallback: (_, fm) => {
+                        const params = [];
                         for (const file of fm.selectedFiles())
                         {
                             let path = file.hash.substring(3, file.hash.length);
@@ -59,11 +60,12 @@
                                 mime: file.mime,
                                 size: file.size
                             }
-                            if (isFromIFrame) {
-                                window.parent.postMessage({type: 'file_' + id, param}, '*');
-                            } else {
-                                window.opener.postMessage({type: 'file_' + id, param}, '*');
-                            }
+                            params.push(param);
+                        }
+                        if (isFromIFrame) {
+                            window.parent.postMessage({type: 'file_' + id, param: params}, '*');
+                        } else {
+                            window.opener.postMessage({type: 'file_' + id, param: params}, '*');
                         }
                         window.close();
                     },
