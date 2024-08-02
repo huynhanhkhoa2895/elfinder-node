@@ -5,7 +5,7 @@ const promise = require('promise');
 const _ = require('underscore');
 const Jimp = require('jimp');
 const fs = require('fs-extra');
-
+const fsWalk = require('@nodelib/fs.walk');
 const helpers = require('./lfs.utils');
 
 const api = {};
@@ -346,7 +346,7 @@ api.search = function (opts, res) {
     const target = helpers.decode(opts.target);
     const tasks = [];
 
-    fs.walk(target.absolutePath)
+    fsWalk.walkStream(target.absolutePath)
       .on('data', function (item) {
         const name = path.basename(item.path);
         if (name.indexOf(opts.q) >= 0) {

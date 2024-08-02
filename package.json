@@ -6,6 +6,7 @@
   "author": "d.kyeremeh@dekyfin.com",
   "license": "MIT",
   "dependencies": {
+    "@nodelib/fs.walk": "^2.0.0",
     "adm-zip": "^0.5.10",
     "archiver": "^1.2.0",
     "base-64": "^1.0.0",
