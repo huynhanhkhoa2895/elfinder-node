@@ -23,7 +23,24 @@ app.set('view engine', 'ejs');
 app.use('/uploads', express.static(uploadsDir));
 
 app.use('/connector', elFinder(roots));
-app.get('/', function (req, res) {
+app.get('/',async function (req, res) {
+  if (process.env.NODE_ENV === 'production') {
+    const status = await fetch(process.env.BE_URL + '/api/users/verify-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: req.query.jwt })
+    }).then((res) => res.json()).then(res=>{
+      return res?.data?.status;
+    }).catch((e) => {
+      return null;
+    });
+    if (!req.query.jwt || !status) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+  }
   res.render(resolve(__dirname, '../index'),{
     API_URL: process.env.API_URL || 'https://localhost:3000'
   });
